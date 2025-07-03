@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport Company - Home</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hero-background {
+            background-image: url('https://placehold.co/1920x700/000000/FFFFFF?text=Airport+Hero+Image');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* Styles for the modal backdrop */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999; /* Ensure it's on top */
+            overflow-y: auto; /* Allow scrolling if content is too long */
+        }
+        /* Styles to hide the modal initially */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center rounded-b-lg">
+        <div class="flex items-center mb-4 md:mb-0">
+            <img src="https://placehold.co/40x40/3B82F6/FFFFFF?text=✈" alt="Airport Logo" class="h-10 w-10 mr-3 rounded-full">
+            <a href="#" class="text-2xl font-extrabold text-blue-700">SkyLink Air</a>
+        </div>
+        <ul class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-8 text-lg font-medium items-center">
+            <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Home</a></li>
+            <li><a href="./aboutUs.html" class="text-gray-700 hover:text-blue-600 transition duration-200">About Us</a></li>
+            <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Services</a></li>
+            <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Destinations</a></li>
+            <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Contact</a></li>
+            <!-- Login Button Added with ID to open modal -->
+            <li>
+                <button id="openLoginModal" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out shadow-md ml-0 md:ml-4">Login</button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-background text-white py-24 md:py-32 flex items-center justify-center text-center rounded-lg m-4">
+        <div class="bg-black bg-opacity-50 p-8 rounded-lg max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">Your Gateway to the World</h1>
+            <p class="text-lg md:text-xl mb-8">Connecting people and places with exceptional service and seamless travel experiences.</p>
+            <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 ease-in-out shadow-lg">Explore Flights</a>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">About SkyLink Air</h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                SkyLink Air is dedicated to providing world-class airport services, ensuring safety, efficiency, and comfort for millions of passengers annually.
+            </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <div class="text-blue-600 text-5xl mb-4">✈️</div>
+                <h3 class="text-xl font-semibold mb-2">Modern Fleet</h3>
+                <p class="text-gray-600">Operating state-of-the-art aircraft for a comfortable and safe journey.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <div class="text-blue-600 text-5xl mb-4">👨‍✈️</div>
+                <h3 class="text-xl font-semibold mb-2">Expert Crew</h3>
+                <p class="text-gray-600">Highly trained professionals committed to your safety and satisfaction.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <div class="text-blue-600 text-5xl mb-4">🌍</div>
+                <h3 class="text-xl font-semibold mb-2">Global Network</h3>
+                <p class="text-gray-600">Extensive routes connecting you to major cities worldwide.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section (Placeholder) -->
+    <section class="bg-blue-50 py-16 rounded-lg m-4">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
+                From check-in to baggage claim, we offer a comprehensive range of services designed to make your travel experience smooth and enjoyable.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-5 rounded-lg shadow-sm">
+                    <h4 class="font-semibold text-lg mb-2">Ticketing</h4>
+                    <p class="text-gray-600 text-sm">Easy online and offline booking options.</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-sm">
+                    <h4 class="font-semibold text-lg mb-2">Lounge Access</h4>
+                    <p class="text-gray-600 text-sm">Relax in our premium lounges.</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-sm">
+                    <h4 class="font-semibold text-lg mb-2">Cargo Services</h4>
+                    <p class="text-gray-600 text-sm">Reliable and secure freight solutions.</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-sm">
+                    <h4 class="font-semibold text-lg mb-2">Special Assistance</h4>
+                    <p class="text-gray-600 text-sm">Support for passengers with special needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action / Footer -->
+    <footer class="bg-gray-900 text-white py-12 px-6 md:px-12 rounded-t-lg mt-8">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-2xl font-bold mb-2">SkyLink Air</h3>
+                <p class="text-gray-400">&copy; 2025 SkyLink Air. All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal (Popup) Structure -->
+    <div id="loginModal" class="modal-backdrop hidden">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Login</h3>
+                <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="modalLoginForm">
+                <div class="mb-4">
+                    <label for="modalUsername" class="block text-gray-700 text-sm font-semibold mb-2">Username</label>
+                    <input
+                        type="text"
+                        id="modalUsername"
+                        name="username"
+                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter your username"
+                        required
+                    >
+                </div>
+                <div class="mb-6">
+                    <label for="modalPassword" class="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+                    <input
+                        type="password"
+                        id="modalPassword"
+                        name="password"
+                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                <div class="flex items-center justify-between">
+                    <button
+                        type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full transition duration-200 ease-in-out"
+                    >
+                        Sign In
+                    </button>
+                </div>
+                <div id="modalLoginMessage" class="mt-4 text-center text-sm"></div>
+            </form>
+            <p class="text-center text-gray-600 text-sm mt-6">
+                Don't have an account? <a href="#" class="text-blue-600 hover:underline">Sign Up</a>
+            </p>
+        </div>
+    </div>
+  <script src="./js/login.js"></script>
+</body>
+</html>
