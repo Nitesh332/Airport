@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nitesh Sawant - Contact</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Added a light background for the page */
+        }
+        /* Custom hero background from your provided head section */
+        .hero-background {
+            background-image: url('https://placehold.co/1920x700/000000/FFFFFF?text=Contact+Page+Banner'); /* Changed to a placeholder for online preview */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* Styles for the modal backdrop */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999; /* Ensure it's on top */
+            overflow-y: auto; /* Allow scrolling if content is too long */
+        }
+        /* Styles to hide the modal initially */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navigation Bar (Similar to Airport Home Page) -->
+    <nav class="bg-white shadow-md py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center rounded-b-lg w-full">
+        <div class="flex items-center mb-4 md:mb-0">
+            <img src="https://placehold.co/40x40/3B82F6/FFFFFF?text=✈" alt="Airport Logo" class="h-10 w-10 mr-3 rounded-full">
+            <a href="#" class="text-2xl font-extrabold text-blue-700">SkyLink Air</a>
+        </div>
+        <ul class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-8 text-lg font-medium items-center">
+            <li><a href="./skylink.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Home</a></li>
+           <li><a href="./aboutUs.html" class="text-gray-700 hover:text-blue-600 transition duration-200">About Us</a></li>
+            <li><a href="./services.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Services</a></li>
+            <li><a href="./contact.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Contact</a></li>
+            <!-- Login Button to open modal -->
+            <li>
+                <button id="openLoginModal" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out shadow-md ml-0 md:ml-4">Login</button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section for Contact Page -->
+    <header class="hero-background text-white py-24 md:py-32 flex items-center justify-center text-center rounded-lg m-4 w-full">
+        <div class="bg-black bg-opacity-50 p-8 rounded-lg max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">Get in Touch</h1>
+            <p class="text-lg md:text-xl mb-8">I'm here to help with your projects and inquiries.</p>
+        </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <section class="container mx-auto px-4 py-16 bg-white rounded-lg shadow-md mb-8">
+        <div class="text-center max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Contact Details</h2>
+            <p class="text-xl text-gray-700 mb-4">My name is <span class="font-semibold text-blue-600">Nitesh Sawant</span></p>
+            <p class="text-xl text-gray-700 mb-6">Contact number is <span class="font-semibold text-blue-600">7039683427</span></p>
+            <p class="text-md text-gray-600">Feel free to reach out for collaborations, questions, or just to say hello!</p>
+        </div>
+    </section>
+
+    <!-- Footer (Similar to Airport Home Page) -->
+    <footer class="bg-gray-900 text-white py-12 px-6 md:px-12 rounded-t-lg mt-auto w-full">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-2xl font-bold mb-2">Nitesh Sawant</h3>
+                <p class="text-gray-400">&copy; 2025 All rights reserved.</p>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal (Popup) Structure -->
+    <div id="loginModal" class="modal-backdrop hidden">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Login</h3>
+                <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700 text-3xl leading-none">&times;</button>
+            </div>
+            <form id="modalLoginForm">
+                <div class="mb-4">
+                    <label for="modalUsername" class="block text-gray-700 text-sm font-semibold mb-2">Username</label>
+                    <input
+                        type="text"
+                        id="modalUsername"
+                        name="username"
+                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter your username"
+                        required
+                    >
+                </div>
+                <div class="mb-6">
+                    <label for="modalPassword" class="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+                    <input
+                        type="password"
+                        id="modalPassword"
+                        name="password"
+                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                <div class="flex items-center justify-between">
+                    <button
+                        type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full transition duration-200 ease-in-out"
+                    >
+                        Sign In
+                    </button>
+                </div>
+                <div id="modalLoginMessage" class="mt-4 text-center text-sm"></div>
+            </form>
+            <p class="text-center text-gray-600 text-sm mt-6">
+                Don't have an account? <a href="#" class="text-blue-600 hover:underline">Sign Up</a>
+            </p>
+        </div>
+    </div>
+  <script src="./js/login.js"></script>
+    <script>
+        // Get elements for the login modal
+        const openLoginModalButton = document.getElementById('openLoginModal');
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginModalButton = document.getElementById('closeLoginModal');
+        const modalLoginForm = document.getElementById('modalLoginForm');
+        const modalLoginMessageDiv = document.getElementById('modalLoginMessage');
+
+        // Function to open the login modal
+        openLoginModalButton.addEventListener('click', () => {
+            loginModal.classList.remove('hidden');
+            modalLoginMessageDiv.textContent = ''; // Clear previous messages
+            modalLoginMessageDiv.className = 'mt-4 text-center text-sm'; // Reset classes
+        });
+
+        // Function to close the login modal
+        closeLoginModalButton.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+        });
+
+        // Close modal if user clicks outside the modal content
+        loginModal.addEventListener('click', (event) => {
+            if (event.target === loginModal) {
+                loginModal.classList.add('hidden');
+            }
+        });
+
+        // Handle login form submission inside the modal (placeholder)
+        modalLoginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const username = document.getElementById('modalUsername').value;
+            const password = document.getElementById('modalPassword').value;
+
+            modalLoginMessageDiv.textContent = 'Logging in...';
+            modalLoginMessageDiv.classList.add('text-gray-500');
+
+            try {
+                // Replace with your actual login API URL
+                const apiUrl = 'https://api.example.com/login';
+
+                const payload = {
+                    username: username,
+                    password: password
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    modalLoginMessageDiv.textContent = 'Login successful! Welcome!';
+                    modalLoginMessageDiv.classList.remove('text-gray-500');
+                    modalLoginMessageDiv.classList.add('text-green-600');
+                    console.log('Login successful:', data);
+                    setTimeout(() => {
+                        loginModal.classList.add('hidden');
+                        modalLoginForm.reset();
+                    }, 1500);
+                } else {
+                    const errorData = await response.json();
+                    modalLoginMessageDiv.textContent = 'Login failed: ' + (errorData.message || 'Invalid credentials.');
+                    modalLoginMessageDiv.classList.remove('text-gray-500');
+                    modalLoginMessageDiv.classList.add('text-red-600');
+                    console.error('Login failed:', response.status, errorData);
+                }
+            } catch (error) {
+                modalLoginMessageDiv.textContent = 'A network error occurred. Please try again later.';
+                modalLoginMessageDiv.classList.remove('text-gray-500');
+                modalLoginMessageDiv.classList.add('text-red-600');
+                console.error('Network or other error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
