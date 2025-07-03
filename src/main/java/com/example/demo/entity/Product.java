@@ -13,6 +13,8 @@ public class Product {
 
     @Column(nullable = false)
     private double price;
+    @Column(nullable = true)
+    private String productImage;
 
     @Column(nullable = true)
     private String description;
@@ -47,5 +49,13 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
     }
 }
