@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for Inter font and general layout */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column; /* Changed to column to accommodate header */
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0; /* Removed padding from body, will apply to container */
+            box-sizing: border-box;
+        }
+        /* Updated Header/Navigation Bar styles */
+        .header-nav {
+            width: 100%;
+            background-color: #ffffff; /* Changed to white */
+            color: #333333; /* Changed text color to dark for contrast on white */
+            padding: 16px 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Space between header and container */
+            display: flex;
+            flex-direction: column; /* For mobile stacking */
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0 0 12px 12px; /* Rounded bottom corners */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .header-nav {
+                flex-direction: row; /* Row for desktop */
+                padding: 16px 48px; /* More padding on desktop */
+            }
+        }
+        .container {
+            max-width: 700px; /* Adjusted max-width for stacked products */
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 24px; /* Added padding to the container */
+            margin-bottom: 20px; /* Space at the bottom */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Product card specific styles */
+        .product-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Updated Header/Navigation Bar Section -->
+    <header class="header-nav">
+        <div class="flex items-center mb-4 md:mb-0">
+            <img src="https://placehold.co/40x40/3B82F6/FFFFFF?text=🛒" alt="Store Logo" class="h-10 w-10 mr-3 rounded-full">
+            <a href="#" class="text-2xl md:text-3xl font-bold text-gray-800">My Awesome Store</a> <!-- Changed text color to dark -->
+        </div>
+        <ul class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-8 text-lg font-medium">
+            <li><a href="./skylink.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Home</a></li> <!-- Changed text color to dark -->
+            <li><a href="./services.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Products</a></li> <!-- Changed text color to dark -->
+            <li><a href="./aboutUs.html" class="text-gray-700 hover:text-blue-600 transition duration-200">About</a></li> <!-- Changed text color to dark -->
+            <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Contact</a></li> <!-- Changed text color to dark -->
+        </ul>
+    </header>
+
+    <div class="container">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">Our Products</h1>
+
+        <div id="loading" class="flex flex-col items-center justify-center py-10">
+            <div class="loading-spinner mb-4"></div>
+            <p class="text-lg text-gray-600">Loading products...</p>
+        </div>
+
+        <!-- Changed to flex column for stacked format -->
+        <div id="products-container" class="flex flex-col gap-6 hidden">
+            <!-- Product cards will be dynamically inserted here -->
+        </div>
+
+        <div id="error-message" class="hidden text-center py-10">
+            <p class="text-red-600 text-lg font-semibold">Failed to load product data. Please try again later.</p>
+            <p id="error-details" class="text-sm mt-2"></p>
+        </div>
+    </div>
+
+    <script>
+        // Get references to HTML elements
+        const loadingDiv = document.getElementById('loading');
+        const productsContainer = document.getElementById('products-container'); // Now this is the main container for all product cards
+        const errorMessageDiv = document.getElementById('error-message');
+        const errorDetailsP = document.getElementById('error-details');
+
+        // API endpoints
+        // IMPORTANT: Replace with your actual authentication and product API URLs
+        const AUTH_API_URL = 'http://localhost:8081/api/auth/login';
+        const PRODUCT_API_URL = 'http://localhost:8081/api/products';
+
+        // Global variable to store all products
+        let allProducts = [];
+
+        /**
+         * Calls the authentication API to get a bearer token.
+         * @returns {Promise<string>} A promise that resolves with the bearer token.
+         */
+        async function getAuthToken() {
+            try {
+                const response = await fetch(AUTH_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'Cookie': 'cq-authoring-mode=TOUCH' // Remove if not relevant to your auth
+                    },
+                    body: JSON.stringify({
+                        // IMPORTANT: Replace with actual username and password or a more secure way to get credentials
+                        username: "Nitesh",
+                        password: "$2a$10$C72EH2b4M9o3reWETEF3cOGqVgNn4uT0zUYu2dfGw.7BNsOTTyYKm"
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text(); // Get raw text for better debugging
+                    throw new Error(`Authentication failed: ${response.statusText} (Status: ${response.status}). Response: ${errorBody}`);
+                }
+
+                const data = await response.json();
+                if (data && data.token) {
+                    return data.token;
+                } else {
+                    console.warn("Auth API response did not contain a 'token' field. Returning full response data as token. Please verify API response structure.");
+                    return JSON.stringify(data); // Return full response if token field is missing
+                }
+
+            } catch (error) {
+                console.error('Error getting auth token:', error);
+                throw new Error('Could not authenticate. ' + error.message);
+            }
+        }
+
+        /**
+         * Fetches product data using the provided bearer token.
+         * @param {string} token - The bearer token for authorization.
+         * @returns {Promise<Array<Object>>} A promise that resolves with an array of product data.
+         */
+        async function getProductData(token) {
+            try {
+                const response = await fetch(PRODUCT_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        // 'Cookie': 'cq-authoring-mode=TOUCH' // Remove if not relevant to your auth
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text(); // Get raw text for better debugging
+                    throw new Error(`Failed to fetch products: ${response.statusText} (Status: ${response.status}). Response: ${errorBody}`);
+                }
+
+                const data = await response.json();
+                if (!Array.isArray(data)) {
+                    throw new Error('Product API did not return an array of products. Received: ' + JSON.stringify(data));
+                }
+                return data;
+            } catch (error) {
+                console.error('Error fetching product data:', error);
+                throw new Error('Could not retrieve product details. ' + error.message);
+            }
+        }
+
+        /**
+         * Creates and returns an HTML element for a single product card.
+         * @param {Object} product - The product data object.
+         * @returns {HTMLElement} The created product card element.
+         */
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card flex flex-col rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out';
+
+            // Use a placeholder image if productImage is not an absolute URL
+            const imageUrl = product.productImage; // Adjusted placeholder size for stacked view
+
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${product.name || 'Product Image'}" class="w-full h-64 object-cover"> <!-- Increased image height for stacked view -->
+                <div class="p-4 flex flex-col flex-grow">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-2">${product.name || 'Unknown Product'}</h3> <!-- Larger heading -->
+                    <p class="text-xl font-bold text-blue-600 mb-3">$${parseFloat(product.price).toFixed(2) || 'N/A'}</p> <!-- Larger price -->
+                    <p class="text-gray-700 leading-relaxed mb-4 flex-grow">${product.description || 'No description available.'}</p> <!-- Standard text size -->
+                    <button class="mt-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Add to Cart
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        /**
+         * Fetches and displays all product data in a grid.
+         */
+        async function loadProductPage() {
+            // Show loading spinner and hide other sections
+            loadingDiv.classList.remove('hidden');
+            productsContainer.classList.add('hidden');
+            errorMessageDiv.classList.add('hidden');
+            productsContainer.innerHTML = ''; // Clear previous products
+
+            try {
+                // Step 1: Get authentication token
+                const token = await getAuthToken();
+                console.log('Authentication successful. Token:', token);
+
+                // Step 2: Fetch all product data
+                allProducts = await getProductData(token);
+                console.log('All products data fetched:', allProducts);
+
+                // Step 3: Populate the HTML elements with product data
+                if (allProducts.length > 0) {
+                    allProducts.forEach(product => {
+                        const productCard = createProductCard(product);
+                        productsContainer.appendChild(productCard);
+                    });
+                    productsContainer.classList.remove('hidden');
+                } else {
+                    productsContainer.innerHTML = '<p class="text-center text-gray-600 col-span-full">No products found.</p>';
+                    productsContainer.classList.remove('hidden');
+                }
+
+                // Hide loading and error
+                loadingDiv.classList.add('hidden');
+
+            } catch (error) {
+                // Display error message
+                console.error('An error occurred:', error);
+                errorDetailsP.textContent = error.message;
+                errorMessageDiv.classList.remove('hidden');
+                loadingDiv.classList.add('hidden');
+                productsContainer.classList.add('hidden'); // Ensure products container is hidden on error
+            }
+        }
+
+        // Call the function to load the product page when the window loads
+        window.onload = loadProductPage;
+    </script>
+</body>
+</html>
