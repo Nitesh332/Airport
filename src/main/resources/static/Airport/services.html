@@ -3,92 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List</title>
+    <title>Airport Company - Home</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for Inter font and general layout */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            flex-direction: column; /* Changed to column to accommodate header */
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 100vh;
-            padding: 0; /* Removed padding from body, will apply to container */
-            box-sizing: border-box;
         }
-        /* Updated Header/Navigation Bar styles */
-        .header-nav {
+        .hero-background {
+            background-image: url('./images/bannerImage.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* Styles for the modal backdrop */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            background-color: #ffffff; /* Changed to white */
-            color: #333333; /* Changed text color to dark for contrast on white */
-            padding: 16px 24px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px; /* Space between header and container */
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
             display: flex;
-            flex-direction: column; /* For mobile stacking */
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            border-radius: 0 0 12px 12px; /* Rounded bottom corners */
+            z-index: 999; /* Ensure it's on top */
+            overflow-y: auto; /* Allow scrolling if content is too long */
         }
-        @media (min-width: 768px) { /* md breakpoint */
-            .header-nav {
-                flex-direction: row; /* Row for desktop */
-                padding: 16px 48px; /* More padding on desktop */
-            }
-        }
-        .container {
-            max-width: 700px; /* Adjusted max-width for stacked products */
-            width: 100%;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            padding: 24px; /* Added padding to the container */
-            margin-bottom: 20px; /* Space at the bottom */
-        }
-        .loading-spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #3b82f6;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Product card specific styles */
-        .product-card {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            transition: transform 0.2s ease-in-out;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
+        /* Styles to hide the modal initially */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Updated Header/Navigation Bar Section -->
-    <header class="header-nav">
+ <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md py-4 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center rounded-b-lg">
         <div class="flex items-center mb-4 md:mb-0">
-            <img src="https://placehold.co/40x40/3B82F6/FFFFFF?text=🛒" alt="Store Logo" class="h-10 w-10 mr-3 rounded-full">
-            <a href="#" class="text-2xl md:text-3xl font-bold text-gray-800">My Awesome Store</a> <!-- Changed text color to dark -->
+            <img src="https://placehold.co/40x40/3B82F6/FFFFFF?text=✈" alt="Airport Logo" class="h-10 w-10 mr-3 rounded-full">
+            <a href="#" class="text-2xl font-extrabold text-blue-700">SkyLink Air</a>
         </div>
-        <ul class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-8 text-lg font-medium">
-            <li><a href="./skylink.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Home</a></li> <!-- Changed text color to dark -->
-            <li><a href="./services.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Products</a></li> <!-- Changed text color to dark -->
-            <li><a href="./aboutUs.html" class="text-gray-700 hover:text-blue-600 transition duration-200">About</a></li> <!-- Changed text color to dark -->
-            <li><a href="./contact.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Contact</a></li> <!-- Changed text color to dark -->
+        <ul class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-8 text-lg font-medium items-center">
+            <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Home</a></li>
+            <li><a href="./aboutUs.html" class="text-gray-700 hover:text-blue-600 transition duration-200">About Us</a></li>
+            <li><a href="./services.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Services</a></li>
+            <li><a href="#" class="text-gray-700 hover:text-blue-600 transition duration-200">Destinations</a></li>
+            <li><a href="./contact.html" class="text-gray-700 hover:text-blue-600 transition duration-200">Contact</a></li>
+
+            <li>
+                <button id="openLoginModal" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out shadow-md ml-0 md:ml-4">Login</button>
+            </li>
         </ul>
-    </header>
+    </nav>
+
+
 
     <div class="container">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center">Our Products</h1>
