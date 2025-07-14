@@ -14,6 +14,11 @@ spring:
     properties:
       hibernate: dialect:org.hibernate.dialect.MySQL8Dialect
       format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    username: sawantnitesh102@gmail.com
+    password: cqrupaafqikvotxx
 
 
 

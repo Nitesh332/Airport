@@ -22,6 +22,8 @@ public class User implements UserDetails {
 
     @Column(unique = true, nullable = false) // Username must be unique and not null
     private String username;
+    @Column(unique = true, nullable = false)
+    private String email;
 
     @Column(nullable = false) // Password must not be null
     private String password;
@@ -102,9 +104,18 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String username, String password, String roles) {
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public User(Long id, String username, String password, String roles,String email) {
         this.id = id;
         this.username = username;
+        this.email=email;
         this.password = password;
         this.roles = roles;
     }

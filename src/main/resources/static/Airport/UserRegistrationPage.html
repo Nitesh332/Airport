@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font for a clean look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Use Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+    <div class="text-center">
+        <h1 class="text-3xl font-bold text-gray-900">Create an Account</h1>
+        <p class="mt-2 text-sm text-gray-600">Join us and start your journey.</p>
+    </div>
+
+    <!-- Registration Form -->
+    <form id="registrationForm" class="space-y-6">
+        <!-- Username Input -->
+        <div>
+            <label for="username" class="text-sm font-medium text-gray-700">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required
+                   class="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+        </div>
+
+        <!-- Email Input -->
+        <div>
+            <label for="email" class="text-sm font-medium text-gray-700">Email address</label>
+            <input id="email" name="email" type="email" autocomplete="email" required
+                   class="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+        </div>
+
+        <!-- Password Input -->
+        <div>
+            <label for="password" class="text-sm font-medium text-gray-700">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required
+                   class="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+            <button type="submit" id="submitButton"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300 disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                <span id="buttonText">Register</span>
+                <!-- Spinner for loading state -->
+                <svg id="buttonSpinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </div>
+    </form>
+
+    <!-- Message container for API responses -->
+    <div id="messageContainer" class="text-center text-sm"></div>
+</div>
+
+<script>
+        // Get form and other elements from the DOM
+        const form = document.getElementById('registrationForm');
+        const submitButton = document.getElementById('submitButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonSpinner = document.getElementById('buttonSpinner');
+        const messageContainer = document.getElementById('messageContainer');
+
+        // Listen for the form submission event
+        form.addEventListener('submit', async function(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Clear previous messages
+            messageContainer.textContent = '';
+            messageContainer.className = 'text-center text-sm';
+
+            // Get user input
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Basic validation
+            if (!username || !email || !password) {
+                messageContainer.textContent = 'Please fill out all fields.';
+                messageContainer.classList.add('text-red-600');
+                return;
+            }
+
+            // --- UI Update: Show loading state ---
+            setLoading(true);
+
+            try {
+                // --- API Call using fetch ---
+                // We are using a fake API endpoint for demonstration.
+                // Replace 'https://jsonplaceholder.typicode.com/posts' with your actual registration API endpoint.
+                const response = await fetch('http://localhost:8081/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // The body of the request contains the user data
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password, // In a real app, never send plain text passwords. Hash them first.
+                    }),
+                });
+
+                // The API call is complete, so we can stop the loading state
+                setLoading(false);
+
+                // Check if the request was successful (status code 2xx)
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Success:', data);
+                    // Show success message
+                    messageContainer.textContent = 'Registration successful! Welcome!';
+                    messageContainer.classList.add('text-green-600');
+                    form.reset(); // Clear the form fields
+                } else {
+                    // Handle server errors (e.g., email already exists)
+                    console.error('Error Response:', response);
+                    messageContainer.textContent = `Registration failed. Server responded with status: ${response.status}`;
+                    messageContainer.classList.add('text-red-600');
+                }
+            } catch (error) {
+                // Handle network errors or other issues with the fetch call
+                setLoading(false);
+                console.error('Fetch Error:', error);
+                messageContainer.textContent = 'Registration failed. Please check your network connection.';
+                messageContainer.classList.add('text-red-600');
+            }
+        });
+
+        // Helper function to manage the button's loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                // Disable button and show spinner
+                submitButton.disabled = true;
+                buttonText.classList.add('hidden');
+                buttonSpinner.classList.remove('hidden');
+            } else {
+                // Enable button and show text
+                submitButton.disabled = false;
+                buttonText.classList.remove('hidden');
+                buttonSpinner.classList.add('hidden');
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -7,8 +7,10 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.CustomPasswordDetailsService;
 import com.example.demo.service.CustomUserDetailsService;
+import com.example.demo.service.EmailService;
 import com.example.demo.util.JwtUtil;
 import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +33,9 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    EmailService emailService;
+
 
     public AuthController(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.jwtUtil = jwtUtil;
@@ -73,10 +78,11 @@ public class AuthController {
         // Create a new user
         User newUser = new User();
         newUser.setUsername(authRequest.getUsername());
+        newUser.setEmail(authRequest.getEmail());
         newUser.setPassword(passwordEncoder.encode(authRequest.getPassword())); // Encode password
         newUser.setRoles("ROLE_USER"); // Default role for new users
-
         userRepository.save(newUser);
+        emailService.sendLoginNotificationEmail(newUser.getEmail(),newUser.getUsername(), newUser.getPassword());
         JsonObject jsonObject=new JsonObject();
         jsonObject.addProperty("response","User registered successfully!");
         return ResponseEntity.status(HttpStatus.CREATED).body(String.valueOf(jsonObject));
