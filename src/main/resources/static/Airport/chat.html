@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot Real-Time Chat</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SockJS and Stomp.js for WebSocket communication -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        /* Custom font and scrollbar for a better look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #messageArea::-webkit-scrollbar {
+            width: 8px;
+        }
+        #messageArea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        #messageArea::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        #messageArea::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<!-- Login Page -->
+<div id="username-page" class="flex items-center justify-center h-screen">
+    <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+        <h2 class="text-3xl font-bold text-center text-gray-800">Enter Chat</h2>
+        <div>
+            <form id="usernameForm" name="usernameForm">
+                <input type="text" id="name" placeholder="Choose a username" autocomplete="off" class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <button type="submit" class="w-full mt-4 px-4 py-3 text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300">
+                    Start Chatting
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Page -->
+<div id="chat-page" class="hidden flex flex-col h-screen">
+    <header class="bg-white shadow-md p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Chat group</h1>
+        <div id="connection-status" class="px-3 py-1 text-sm font-medium rounded-full"></div>
+    </header>
+
+    <div class="flex-1 p-4 overflow-y-auto" id="messageArea">
+        <!-- Chat messages will be appended here -->
+    </div>
+
+    <footer class="bg-white p-4">
+        <form id="messageForm" name="messageForm" class="flex items-center space-x-4">
+            <input type="text" id="message" placeholder="Type your message..." autocomplete="off" class="flex-1 px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="px-6 py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300">
+                Send
+            </button>
+        </form>
+    </footer>
+</div>
+
+<script>
+        'use strict';
+
+        // UI element references
+        const usernamePage = document.querySelector('#username-page');
+        const chatPage = document.querySelector('#chat-page');
+        const usernameForm = document.querySelector('#usernameForm');
+        const messageForm = document.querySelector('#messageForm');
+        const messageInput = document.querySelector('#message');
+        const messageArea = document.querySelector('#messageArea');
+        const connectionStatus = document.querySelector('#connection-status');
+
+        // State variables
+        let stompClient = null;
+        let username = null;
+
+        const colors = [
+            '#2196F3', '#32c787', '#00BCD4', '#ff5652',
+            '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
+        ];
+
+        // --- Event Listeners ---
+        usernameForm.addEventListener('submit', connect, true);
+        messageForm.addEventListener('submit', sendMessage, true);
+
+        // --- Functions ---
+
+        /**
+         * Connects to the WebSocket server and sets up subscriptions.
+         * @param {Event} event - The form submission event.
+         */
+        function connect(event) {
+            event.preventDefault();
+            username = document.querySelector('#name').value.trim();
+
+            if (username) {
+                usernamePage.classList.add('hidden');
+                chatPage.classList.remove('hidden');
+
+                const socket = new SockJS('/ws');
+                stompClient = Stomp.over(socket);
+
+                stompClient.connect({}, onConnected, onError);
+            }
+        }
+
+        /**
+         * Callback function for a successful WebSocket connection.
+         */
+        function onConnected() {
+            // Subscribe to the Public Topic
+            stompClient.subscribe('/topic/public', onMessageReceived);
+
+            // Tell your username to the server
+            stompClient.send("/app/chat.addUser",
+                {},
+                JSON.stringify({ sender: username, type: 'JOIN' })
+            );
+
+            updateConnectionStatus(true, 'Connected');
+        }
+
+        /**
+         * Callback function for a WebSocket connection error.
+         */
+        function onError() {
+            updateConnectionStatus(false, 'Could not connect. Please refresh and try again.');
+        }
+
+        /**
+         * Sends a chat message to the server.
+         * @param {Event} event - The form submission event.
+         */
+        function sendMessage(event) {
+            event.preventDefault();
+            const messageContent = messageInput.value.trim();
+
+            if (messageContent && stompClient) {
+                const chatMessage = {
+                    sender: username,
+                    content: messageContent,
+                    type: 'CHAT'
+                };
+                stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+                messageInput.value = '';
+            }
+        }
+
+        /**
+         * Handles incoming messages and displays them in the chat area.
+         * @param {Object} payload - The message payload from the server.
+         */
+        function onMessageReceived(payload) {
+            const message = JSON.parse(payload.body);
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('mb-4');
+
+            if (message.type === 'JOIN') {
+                messageElement.classList.add('text-center', 'text-gray-500', 'text-sm');
+                message.content = message.sender + ' joined the chat!';
+                messageElement.textContent = message.content;
+            } else if (message.type === 'LEAVE') {
+                messageElement.classList.add('text-center', 'text-gray-500', 'text-sm');
+                message.content = message.sender + ' left the chat!';
+                messageElement.textContent = message.content;
+            } else {
+                messageElement.classList.add('flex', 'items-start', 'space-x-3');
+
+                const avatarElement = document.createElement('div');
+                avatarElement.classList.add('w-10', 'h-10', 'flex-shrink-0', 'flex', 'items-center', 'justify-center', 'rounded-full', 'font-bold', 'text-white');
+                const avatarText = document.createTextNode(message.sender[0].toUpperCase());
+                avatarElement.appendChild(avatarText);
+                avatarElement.style.backgroundColor = getAvatarColor(message.sender);
+
+                messageElement.appendChild(avatarElement);
+
+                const messageContentElement = document.createElement('div');
+                messageContentElement.classList.add('bg-white', 'p-3', 'rounded-lg', 'shadow-sm');
+
+                const senderElement = document.createElement('p');
+                senderElement.classList.add('font-semibold', 'text-gray-800');
+                senderElement.textContent = message.sender;
+
+                const textElement = document.createElement('p');
+                textElement.classList.add('text-gray-700');
+                textElement.textContent = message.content;
+
+                messageContentElement.appendChild(senderElement);
+                messageContentElement.appendChild(textElement);
+
+                messageElement.appendChild(messageContentElement);
+            }
+
+            messageArea.appendChild(messageElement);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
+
+        /**
+         * Generates a consistent color for a user's avatar based on their username.
+         * @param {string} messageSender - The username of the sender.
+         * @returns {string} A hex color code.
+         */
+        function getAvatarColor(messageSender) {
+            let hash = 0;
+            for (let i = 0; i < messageSender.length; i++) {
+                hash = 31 * hash + messageSender.charCodeAt(i);
+            }
+            const index = Math.abs(hash % colors.length);
+            return colors[index];
+        }
+
+        /**
+         * Updates the connection status indicator.
+         * @param {boolean} isConnected - Whether the client is connected.
+         * @param {string} text - The status text to display.
+         */
+        function updateConnectionStatus(isConnected, text) {
+            connectionStatus.textContent = text;
+            if (isConnected) {
+                connectionStatus.classList.remove('bg-red-100', 'text-red-800');
+                connectionStatus.classList.add('bg-green-100', 'text-green-800');
+            } else {
+                connectionStatus.classList.remove('bg-green-100', 'text-green-800');
+                connectionStatus.classList.add('bg-red-100', 'text-red-800');
+            }
+        }
+
+    </script>
+</body>
+</html>
